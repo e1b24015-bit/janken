@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>じゃんけんゲーム</title>
+</head>
+
+<body>
+
+  <h1>じゃんけんゲーム</h1>
+
+  <p th:if="${username != null}">
+    Hi <span th:text="${username}"></span>
+  </p>
+
+  <h2>あなたの手を選んでください</h2>
+
+  <a th:href="@{/janken(hand='グー',name=${username})}">グー</a>
+  <br>
+
+  <a th:href="@{/janken(hand='チョキ',name=${username})}">チョキ</a>
+  <br>
+
+  <a th:href="@{/janken(hand='パー',name=${username})}">パー</a>
+
+  <div th:if="${myHand != null}">
+
+    <h2>結果</h2>
+
+    <p>
+      あなたの手：
+      <span th:text="${myHand}"></span>
+    </p>
+
+    <p>
+      CPUの手：
+      <span th:text="${cpuHand}"></span>
+    </p>
+
+    <p>
+      結果：
+      <span th:text="${result}"></span>
+    </p>
+
+  </div>
+
+</body>
+
+</html>
