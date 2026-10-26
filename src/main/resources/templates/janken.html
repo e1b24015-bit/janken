@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
   <meta charset="UTF-8">
@@ -8,18 +8,19 @@
 
 <body>
 
+  <div><a href="/logout">ログアウト</a></div>
+
   <h1>じゃんけんゲーム</h1>
 
   <p th:if="${loginUser != null}">
     Hi <span th:text="${loginUser}"></span>
   </p>
-
-  <form action="#" th:action="@{/logout}" method="post">
-    <button type="submit">ログアウト</button>
-  </form>
+  <p sec:authorize="isAuthenticated()">
+    ログインユーザ：<span sec:authentication="name"></span>
+  </p>
 
   <h2>エントリー</h2>
-  <ul>
+  <ul th:if="${entry}">
     <li th:each="user : ${entry.users}">
       <span th:text="${user}"></span>
     </li>
