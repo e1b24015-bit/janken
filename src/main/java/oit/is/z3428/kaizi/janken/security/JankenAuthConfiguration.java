@@ -3,48 +3,51 @@ package oit.is.z3428.kaizi.janken.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class JankenAuthConfiguration {
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.formLogin(login -> login
+        .permitAll())
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/"))
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers("/janken*/**").authenticated()
+            .anyRequest().permitAll())
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers("/h2-console*/**"))
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions
+                .sameOrigin()));
+    return http.build();
   }
 
   @Bean
-  public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-
+  public InMemoryUserDetailsManager userDetailsService() {
     UserDetails user1 = User.withUsername("user1")
-        .password(passwordEncoder.encode("isdev"))
+        .password("{bcrypt}$2a$10$FU0P.0vLocGHFslP08n1OueZmt5AHDWlKBS0BFQl0YUiwb9DeT.ge")
         .roles("USER")
         .build();
 
     UserDetails user2 = User.withUsername("user2")
-        .password(passwordEncoder.encode("isdev"))
+        .password("{bcrypt}$2a$10$pZFfCxAwm3nkXIdqaHEM2.wP0mqaUJ2dCCtltBxSUyM17mPYPKv3u")
         .roles("USER")
         .build();
 
-    return new InMemoryUserDetailsManager(user1, user2);
-  }
+    UserDetails honda = User.withUsername("ほんだ")
+        .password("{bcrypt}$2a$10$FU0P.0vLocGHFslP08n1OueZmt5AHDWlKBS0BFQl0YUiwb9DeT.ge")
+        .roles("USER")
+        .build();
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/janken/**").authenticated()
-            .anyRequest().permitAll())
-        .formLogin(form -> form.permitAll())
-        .logout(logout -> logout.logoutSuccessUrl("/"));
-
-    return http.build();
+    return new InMemoryUserDetailsManager(user1, user2, honda);
   }
 }
