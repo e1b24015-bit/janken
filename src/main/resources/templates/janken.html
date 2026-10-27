@@ -22,7 +22,7 @@
   <h2>エントリー</h2>
   <ul th:if="${users}">
     <li th:each="user : ${users}">
-      <span th:text="${user.name}"></span>
+      <a th:href="@{/match(id=${user.id})}">[[${user.name}]]</a>
     </li>
   </ul>
 
