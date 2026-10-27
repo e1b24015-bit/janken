@@ -22,6 +22,8 @@ public class JankenAuthConfiguration {
             .logoutSuccessUrl("/"))
         .authorizeHttpRequests(authz -> authz
             .requestMatchers("/janken*/**").authenticated()
+            .requestMatchers("/match/**").authenticated()
+            .requestMatchers("/fight/**").authenticated()
             .anyRequest().permitAll())
         .csrf(csrf -> csrf
             .ignoringRequestMatchers("/h2-console*/**"))
