@@ -20,9 +20,9 @@
   </p>
 
   <h2>エントリー</h2>
-  <ul th:if="${entry}">
-    <li th:each="user : ${entry.users}">
-      <span th:text="${user}"></span>
+  <ul th:if="${users}">
+    <li th:each="user : ${users}">
+      <span th:text="${user.name}"></span>
     </li>
   </ul>
 
