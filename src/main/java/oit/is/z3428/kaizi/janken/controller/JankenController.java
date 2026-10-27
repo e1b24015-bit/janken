@@ -64,4 +64,44 @@ public class JankenController {
     model.addAttribute("opponent", opponent);
     return "match";
   }
+
+  @GetMapping("/fight")
+  public String fight(
+      @RequestParam int id,
+      @RequestParam String hand,
+      Principal prin,
+      ModelMap model) {
+
+    String loginUserName = prin.getName();
+    User loginUser = this.userMapper.selectByName(loginUserName);
+    User opponent = this.userMapper.selectById(id);
+
+    // CPUの手（固定でGu）
+    String cpuHand = "Gu";
+
+    // 勝敗判定
+    String result = "Draw";
+    if ("Choki".equalsIgnoreCase(hand) || "チョキ".equals(hand)) {
+      result = "You Lose";
+    } else if ("Pa".equalsIgnoreCase(hand) || "パー".equals(hand)) {
+      result = "You Win!";
+    }
+
+    // 試合結果をMatchオブジェクトに格納してDBへ登録
+    Match match = new Match();
+    match.setUser1(loginUser.getId());
+    match.setUser2(opponent.getId());
+    match.setUser1Hand(hand);
+    match.setUser2Hand(cpuHand);
+    this.matchMapper.insertMatch(match);
+
+    // 画面渡し用の属性を設定
+    model.addAttribute("loginUser", loginUserName);
+    model.addAttribute("opponent", opponent);
+    model.addAttribute("myHand", hand);
+    model.addAttribute("cpuHand", cpuHand);
+    model.addAttribute("result", result);
+
+    return "match";
+  }
 }

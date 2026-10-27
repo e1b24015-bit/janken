@@ -13,18 +13,18 @@
 
   <h2><span th:text="${loginUser}"></span> V.S. <span th:text="${opponent.name}"></span></h2>
 
-  <h2>あなたの手を選んでください</h2>
+  <!-- じゃんけんの手のリンク -->
   <p th:if="${opponent}">
-    <a th:href="@{/fight(id=${opponent.id}, hand='グー')}">グー</a>
-    <a th:href="@{/fight(id=${opponent.id}, hand='チョキ')}">チョキ</a>
-    <a th:href="@{/fight(id=${opponent.id}, hand='パー')}">パー</a>
+    <a th:href="@{/fight(id=${opponent.id}, hand='Gu')}">ぐー</a>
+    <a th:href="@{/fight(id=${opponent.id}, hand='Choki')}">ちょき</a>
+    <a th:href="@{/fight(id=${opponent.id}, hand='Pa')}">ぱー</a>
   </p>
 
-  <div th:if="${myHand != null}">
-    <h2>結果</h2>
-    <p>あなたの手：<span th:text="${myHand}"></span></p>
-    <p>相手の手：<span th:text="${cpuHand}"></span></p>
-    <p>結果：<span th:text="${result}"></span></p>
+  <!-- じゃんけんの手を選択したときのみ表示される結果欄 -->
+  <div th:if="${myHand}">
+    <p>あなたの手 <span th:text="${myHand}"></span></p>
+    <p>相手の手 <span th:text="${cpuHand}"></span></p>
+    <p>結果 <span th:text="${result}"></span></p>
   </div>
 
   <p><a href="/janken">もどる</a></p>
