@@ -83,13 +83,29 @@ public class JankenController {
     String loginUserName = prin.getName();
     User loginUser = this.userMapper.selectByName(loginUserName);
 
-    // matchinfo に登録
-    MatchInfo matchInfo = new MatchInfo();
-    matchInfo.setUser1(loginUser.getId());
-    matchInfo.setUser2(id);
-    matchInfo.setUser1Hand(hand);
-    matchInfo.setIsActive(true);
-    this.matchInfoMapper.insertMatchInfo(matchInfo);
+    // 相手(id)が自分(loginUser.getId())を相手に待機しているレコードがあるか確認
+    MatchInfo existingMatch = this.matchInfoMapper.selectActiveMatchInfoByUsers(id, loginUser.getId());
+
+    if (existingMatch != null) {
+      // 試合成立: matches に登録し、matchinfo の isActive を FALSE に更新
+      Match match = new Match();
+      match.setUser1(existingMatch.getUser1());
+      match.setUser2(loginUser.getId());
+      match.setUser1Hand(existingMatch.getUser1Hand());
+      match.setUser2Hand(hand);
+      match.setIsActive(true);
+      this.matchMapper.insertMatch(match);
+
+      this.matchInfoMapper.updateMatchInfoActive(existingMatch.getId(), false);
+    } else {
+      // 自分が先手: matchinfo に登録して待機
+      MatchInfo matchInfo = new MatchInfo();
+      matchInfo.setUser1(loginUser.getId());
+      matchInfo.setUser2(id);
+      matchInfo.setUser1Hand(hand);
+      matchInfo.setIsActive(true);
+      this.matchInfoMapper.insertMatchInfo(matchInfo);
+    }
 
     model.addAttribute("loginUser", loginUserName);
     return "wait";
