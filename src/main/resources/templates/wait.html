@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Wait</title>
+</head>
+
+<body>
+  <h1>相手の手を待ってます</h1>
+  <p th:if="${loginUser != null}">
+    Hi <span th:text="${loginUser}"></span>
+  </p>
+</body>
+
+</html>

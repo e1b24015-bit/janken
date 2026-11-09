@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z3428.kaizi.janken.model.Entry;
 import oit.is.z3428.kaizi.janken.model.Janken;
 import oit.is.z3428.kaizi.janken.model.Match;
+import oit.is.z3428.kaizi.janken.model.MatchInfo;
+import oit.is.z3428.kaizi.janken.model.MatchInfoMapper;
 import oit.is.z3428.kaizi.janken.model.MatchMapper;
 import oit.is.z3428.kaizi.janken.model.User;
 import oit.is.z3428.kaizi.janken.model.UserMapper;
@@ -28,6 +30,9 @@ public class JankenController {
   @Autowired
   private MatchMapper matchMapper;
 
+  @Autowired
+  private MatchInfoMapper matchInfoMapper;
+
   @GetMapping("/janken")
   public String janken(
       @RequestParam(required = false) String hand,
@@ -42,6 +47,9 @@ public class JankenController {
 
     ArrayList<User> users = this.userMapper.selectAllUsers();
     model.addAttribute("users", users);
+
+    ArrayList<MatchInfo> activeMatches = this.matchInfoMapper.selectActiveMatchInfo();
+    model.addAttribute("activeMatches", activeMatches);
 
     ArrayList<Match> matches = this.matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
@@ -63,6 +71,28 @@ public class JankenController {
     model.addAttribute("loginUser", loginUser);
     model.addAttribute("opponent", opponent);
     return "match";
+  }
+
+  @GetMapping("/wait")
+  public String wait(
+      @RequestParam int id,
+      @RequestParam String hand,
+      Principal prin,
+      ModelMap model) {
+
+    String loginUserName = prin.getName();
+    User loginUser = this.userMapper.selectByName(loginUserName);
+
+    // matchinfo に登録
+    MatchInfo matchInfo = new MatchInfo();
+    matchInfo.setUser1(loginUser.getId());
+    matchInfo.setUser2(id);
+    matchInfo.setUser1Hand(hand);
+    matchInfo.setIsActive(true);
+    this.matchInfoMapper.insertMatchInfo(matchInfo);
+
+    model.addAttribute("loginUser", loginUserName);
+    return "wait";
   }
 
   @GetMapping("/fight")
@@ -93,6 +123,7 @@ public class JankenController {
     match.setUser2(opponent.getId());
     match.setUser1Hand(hand);
     match.setUser2Hand(cpuHand);
+    match.setIsActive(false);
     this.matchMapper.insertMatch(match);
 
     // 画面渡し用の属性を設定
