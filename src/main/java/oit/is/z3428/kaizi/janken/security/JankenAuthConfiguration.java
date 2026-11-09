@@ -23,6 +23,7 @@ public class JankenAuthConfiguration {
         .authorizeHttpRequests(authz -> authz
             .requestMatchers("/janken*/**").authenticated()
             .requestMatchers("/match/**").authenticated()
+            .requestMatchers("/wait/**").authenticated()
             .requestMatchers("/fight/**").authenticated()
             .anyRequest().permitAll())
         .csrf(csrf -> csrf
