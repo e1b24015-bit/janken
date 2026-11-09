@@ -4,6 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Wait</title>
+  <script>
+    window.onload = function () {
+      var sse = new EventSource('/wait/sse');
+      sse.onmessage = function (event) {
+        console.log("SSE received:", event.data);
+        var match = JSON.parse(event.data);
+        var resultDiv = document.getElementById("result_area");
+        if (resultDiv) {
+          resultDiv.innerHTML = "<h2>対戦結果</h2>"
+            + "<p>Match: id=" + match.id + " user1=" + match.user1 + " user2=" + match.user2
+            + " user1Hand=" + match.user1Hand + " user2Hand=" + match.user2Hand + "</p>"
+            + "<p><a href='/janken'>もどる</a></p>";
+        }
+        sse.close();
+      };
+    };
+  </script>
 </head>
 
 <body>
@@ -11,6 +28,8 @@
   <p th:if="${loginUser != null}">
     Hi <span th:text="${loginUser}"></span>
   </p>
+
+  <div id="result_area"></div>
 </body>
 
 </html>
